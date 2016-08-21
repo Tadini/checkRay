@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<style>
+    *{margin:0;padding:0;}
+    body{}
+    li{list-style:none;}
+    input{border:none;}
+    .rayWrap{width:200px;padding:0 10px 10px;background:#d3d3d3;overflow:hidden;margin:0 auto;}
+    .rayTitle{width:100%;height:20px;background:#d3d3d3;color:#222;font-size:12px;line-height: 20px;}
+    .rayTitle span{padding:5px;}
+    .rayHead{width:100%;height:35px;overflow:hidden;}
+    .rayDetail li{width:33.3333%;height:30px;overflow:hidden;float: left;cursor:pointer;}
+    .rayDetail .black{width:46px;height:30px;line-height: 30px;background:#000;color:#f00;font-size:26px;font-weight: 600;text-align: center;font-family: Helvetica;}
+    .countdown .black{float: left;}
+    .number .black{float: right;}
+    .status{text-align: center;}
+    .status img{border-left:3px solid #e6e6e6;border-top:3px solid #e6e6e6;border-bottom:3px solid #666666;border-right:3px solid #666666;padding:1px;width:20px;}
+    #RayBox{width:200px;padding:1px;background:rgba(136, 136, 136, 0.7);height:200px;overflow:hidden;position: relative;}
+    #RayBox div{width:19px;height: 19px;border:1px solid #888;float:left;cursor:pointer;float:left;background: url(img/ray.gif) no-repeat 0px 0px;margin-left:-1px;margin-top: -1px;}
+    #RayBox div.rayHide{background-position:0px 0px;}
+    #RayBox div.rayOpen{background:#e3e3e3;text-align: center;color:#333;line-height: 20px;}
+    #RayBox div.rayFlag{background-position:-19px 0px;}
+    #RayBox div.raySign{background-position:-38px 0px;}
+    #RayBox div.ray{background-position:-57px 0px;background-color:#e3e3e3;}
+    #RayBox div.rayError{background-position:-76px 0px;background-color:#e3e3e3;}
+
+    .raySet{width:340px;height:auto;  margin: 0 auto;display:none;overflow:hidden;border:1px solid #ccc;padding:10px;}
+    .ray_set{width:120px;height:60px;line-height: 20px;font-size:14px;float: left;padding:5px 0;}
+    .ray_set .ray_radio,.ray_set2 .ray_radio{width:20px;height:20px;float: left;}
+    .ray_set .ray_radio{padding:20px 0;}
+    .ray_set .ray_desc{width:100px;height:60px;float: left;}
+    .ray_desc label{display:block;}
+    .ray_set2{width:210px;height:180px;float: right;line-height: 20px;font-size:14px;padding:5px 0;}
+    .ray_set2 .ray_desc{width:190px;height:160px;overflow:hidden;float: left;}
+    .ray_set2 .custom_set{height:24px;width: 100%;padding:8px 0 10px;overflow:hidden;}
+    .custom_set .tit{float: left;width:120px;height: 24px;line-height: 24px;text-align: left;}
+    .custom_set .num{width:68px;height: 24px;line-height: 24px;float: left;border:1px solid #ccc;}
+    .ray_btn{width:100%;height:30px;line-height: 30px;overflow:hidden;text-align: center;padding:10px 0 0;}
+    .ray_btn span{width:100px;height: 30px;line-height: 30px;text-align: center;background:#3C87D4;display:inline-block;color:#fff;cursor:pointer;}
+
+    #record{position: absolute;top:5px;left:5px;width:200px;height:30px;}
+</style>
+<script src="tdn.js"></script>
+<script src="tdnDialog.js"></script>
+<link href="tdnDialog.css" rel="stylesheet">
+</head>
+<body>
+<div class="rayWrap" id="rayWrap">
+    <div class="rayTitle"><span id="choice">选项</span><span id="check">最高纪录</span></div>
+    <div class="rayHead">
+        <ul class="rayDetail">
+            <li class="countdown"><div class="black" id="rayNum">000</div></li>
+            <li class="status"><img src="img/smile.png" id="game"></li>
+            <li class="number"><div class="black" id="rayTime">000</div></li>
+        </ul>
+    </div>
+    <div id="RayBox">
+    </div>
+</div>
+<div id="record">最高纪录：</div>
+<div class="raySet" id="raySet">
+    <dl class="ray_set2">
+        <dt class="ray_radio"><input type="radio" name="level" id="custom"></dt>
+        <dd class="ray_desc">
+                    <label for="custom">
+                    自定义 <br/>
+                    <div class="custom_set">
+                        <span class="tit">高度(9-24)(H)</span>
+                        <input type="text" name="ray_h" class="num" id="ray_h">
+                    </div>
+                    <div class="custom_set">
+                        <span class="tit">宽度(9-30)(W)</span>
+                        <input type="text" name="ray_w" class="num" id="ray_w">
+                    </div>
+                    <div class="custom_set">
+                        <span class="tit">Ray(10-668)(M)</span>
+                        <input type="text" name="ray_m" class="num" id="ray_m">
+                    </div>
+                    </label>
+        </dd>
+    </dl>
+    <dl class="ray_set">
+        <dt class="ray_radio"><input type="radio" name="level" id="primary" onclick="ray({X:9,Y:9,num:10})" checked></dt>
+        <dd class="ray_desc"><label for="primary">初级 <br/>10Ray <br/> 9*9平铺</label></dd>
+    </dl>
+    <dl class="ray_set">
+        <dt class="ray_radio"><input type="radio" name="level" id="middle" onclick="ray({X:16,Y:16,num:40})"></dt>
+        <dd class="ray_desc"><label for="middle">中级 <br/>40Ray <br/> 16*16平铺</label></dd>
+    </dl>
+    <dl class="ray_set">
+        <dt class="ray_radio"><input type="radio" name="level" id="senior" onclick="ray({X:30,Y:16,num:99})"></dt>
+        <dd class="ray_desc"><label for="senior">高级 <br/>99Ray <br/> 30*16平铺</label></dd>
+    </dl>
+    <div class="ray_btn">
+        <!-- <span id="raySure">确定</span> -->
+    </div>
+</div>
+<script>
+;(function(window){
+    var gameStatus = 0,timer = null;//0: 未开始 ；1：游戏中；2：游戏结束
+    var oCho = $("choice"),oW = $("ray_w"),oH =$("ray_h"),oM =$("ray_m"),oCut =$("custom"),
+            oGame=$("game");
+    var level = 1;//0自定义 1初级   2中级   3高级  
+  /*  var btn = $("raySure");
+    btn.onclick = function(){
+
+    }*/
+    var lev = document.getElementsByName("level");
+    var levArr =["自定义","初级","中级","高级"]
+    function checked(){
+        var obj=null;
+        for(var i=0;i<lev.length;i++){
+            if(lev[i].checked){
+                obj = levArr[i];
+                break;
+            }
+        }
+        return obj;
+    }
+
+    oCho.onclick = function(){
+        var self=this;
+        if(!this.onOff){
+            dialog({HideID:"raySet",width:376,height:319,title:self.innerHTML,close:function(){
+                self.onOff = false;
+            }});
+            this.onOff = true;
+        }
+    }
+    oW.onclick= oH.onclick= oM.onclick= function(){
+        oCut.checked = "checked";
+    }
+    oW.onblur= function(){
+        var val=oW.value.trim(); 
+        if(val.length===0)return;      
+        if(val<9||val>30){
+            alert("请填写正确的数值哦！");
+            return ;
+        }
+        if(isNum(val)){
+            ray({X:val});    
+        }else{
+            alert("敢问少侠填写的是阿拉伯数字吗？")
+        }
+    }
+    oH.onblur= function(){
+        var val=oH.value.trim();   
+        if(val.length===0)return;    
+        if(val<9||val>24){
+            alert("请填写正确的数值哦！");
+            return ;
+        }
+        if(isNum(val)){
+            ray({Y:val});    
+        }else{
+            alert("敢问少侠填写的是阿拉伯数字吗？")
+        }
+        
+    }
+    oM.onblur= function(){
+        var val=oM.value.trim();
+        if(val.length===0)return;       
+        if(val<9||val>668){
+            alert("请填写正确的数值哦！");
+            return ;
+        }
+        if(isNum(val)){
+            ray({num:val});    
+        }else{
+            alert("敢问少侠填写的是阿拉伯数字吗？")
+        }
+        
+    }
+    //var rayNum = 10;
+   function isNum(val){
+    var res = /^[-+]?\d+$/;
+    val = val.trim();
+    return res.test(val);
+   }
+   
+    function ray(opts){
+        return new ray.prototype.init(opts);
+    }
+
+    ray.prototype = ray.fn ={
+        constructor: ray,
+        init: function(opts){
+            this.setting(opts);        
+            if(this.options.num>this.options.X*this.options.Y){
+                alert("请填写正确的雷数！");
+                return false;
+            }
+            //gameStatus = 0;
+            //this.ico.src="img/smile.png";
+            this.createRay();
+            this.addEvent();
+        },
+        setting: function(opts){
+            this.Wrap = $("rayWrap");
+            this.Box = $("RayBox");
+            this.numBox = $("rayNum");
+            this.timeBox = $("rayTime");
+            this.ico = $("game");
+            this.options={
+                X: tdn.getCookie("width")? tdn.getCookie("width"):10,
+                Y: tdn.getCookie("height")? tdn.getCookie("height"):10,
+                num: tdn.getCookie("num")? tdn.getCookie("num"):20
+            };
+            tdn.extend(this.options,opts);
+            this.rayNum = this.options.num;
+            console.log(opts,tdn.getCookie("width")? tdn.getCookie("width"):10,tdn.getCookie("height")? tdn.getCookie("height"):10,tdn.getCookie("num")? tdn.getCookie("num"):20)
+            tdn.setCookie("width",this.options.X,5);
+            tdn.setCookie("height",this.options.Y,5);
+            tdn.setCookie("num",this.options.num,5);
+            //console.log(tdn.getCookie("width"),this.options.X,tdn.getCookie("height"),this.options.Y,tdn.getCookie("num"),this.options.num)
+            //console.log(this.options)
+            this.Wrap.style.width = this.options.X*20+"px";
+            this.Wrap.style.height = (this.options.Y*20+55)+"px";
+            this.Box.style.width = this.options.X*20+"px";
+            this.Box.style.height = this.options.Y*20+"px";
+            this.numBox.innerHTML  = this.addTwoZero(this.rayNum);
+        },
+        createRay: function(){
+            var str="";
+            this.rayArr=[]
+            for(var i=0;i<this.options.X;i++){
+                this.rayArr[i]=[]
+                for(var j=0;j<this.options.Y;j++){
+                    this.rayArr[i][j]=0;
+                    str+='<div id="r_'+i+'_'+j+'" class="rayHide" style="position:absolute;top:'+(j*20)+'px;left:'+(i*20)+'px"></div>'
+                }
+            }
+            this.Box.innerHTML = str;
+            this.rayMap();
+            //console.log(this.rayArr)
+        },
+        rayMap: function(){
+            var self=this;arr =[],i=0;
+            while(i<this.options.num){
+                var rows = Math.floor(Math.random()*this.options.X);
+                var cols = Math.floor(Math.random()*this.options.Y);
+                if(this.rayArr[rows][cols]!=-1){
+                    this.rayArr[rows][cols]=-1;
+                    arr.push(rows+'_'+cols )
+                    i++;
+                }
+            }
+            arr = arr.sort();
+           /* for(var j=0;j<arr.length;j++){
+                $('r_'+arr[j].substring(0,arr[j].indexOf("_"))+arr[j].substring(arr[j].indexOf("_"))).className = "ray"
+                //console.log('r_'+arr[j].substring(0,arr[j].indexOf("_"))+arr[j].substring(arr[j].indexOf("_")))
+            }*/
+            setTimeout(function(){
+                self.blockDetails();
+            },120)
+            
+            console.log(arr)
+        },
+        blockDetails:function(){//记录每个方格周围存在雷的个数
+            var self = this,
+                rows = this.options.X,
+                cols = this.options.Y,num;
+               // console.log(rows,cols)
+            for(var i=0;i<rows;i++){
+                for(var j=0;j<cols;j++){
+                    if(this.rayArr[i][j]!=-1){                                                               /*   (i-1,j-1)      (i-1,j)       (i-1,j+1)    */
+                        num=0;                                                                                 /*    (i,j-1)         (i,j)           (i,j+1)      */
+                        if(i>0&&j>0&&this.rayArr[i-1][j-1]<0){num++;}//左上        /*    (i+1,j-1)     (i+1,j)      (i+1,j+1)  */
+                        if(j>0&&this.rayArr[i][j-1]<0){num++;}//左中
+                        if(j>0&&i<rows-1&&this.rayArr[i+1][j-1]<0){num++;}//左下
+                        if(i>0&&this.rayArr[i-1][j]<0){num++;}//中上
+                        if(i<rows-1&&this.rayArr[i+1][j]<0){num++;}//中下
+                        if(i>0&&j<cols&&this.rayArr[i-1][j+1]<0){num++;}//右上
+                        if(j<cols&&this.rayArr[i][j+1]<0){num++;}//右中
+                        if(i<rows-1&&j<cols&&this.rayArr[i+1][j+1]<0){num++;}//右下
+                        this.rayArr[i][j] = num;
+                    }
+                }
+            }
+        },
+        openBlock: function(x,y){//点击方格时触发的事件
+            var self=this,now = $('r_'+x+'_'+y);
+            if(!tdn(now).hasClass("rayHide"))return;//避免不必要的点击和计算
+            //console.log(now.className,this.rayArr[x][y])
+            if(this.rayArr[x][y]==-1){//触ray
+                tdn(now).removeClass('rayHide').addClass("ray");
+                setTimeout(function(){self.endGame();},20);
+            }else if(this.rayArr[x][y]>0){//周围有ray
+                tdn(now).removeClass('rayHide').html(this.rayArr[x][y]).addClass("rayOpen");
+            }else{//周围没有ray
+                tdn(now).removeClass('rayHide').addClass("rayOpen");
+                this.openBlankBlock(x,y);
+            }
+        },
+        openBlankBlock: function(i,j){//点击无ray方格时触发的事件
+            var rows = this.options.X,
+                cols = this.options.Y;                  
+            if(i>0&&j>0&&this.rayArr[i-1][j-1]>=0){this.openBlock(i-1,j-1);}//左上       
+            if(j>0&&this.rayArr[i][j-1]>=0){this.openBlock(i,j-1)}//左中
+            if(j>0&&i<rows-1&&this.rayArr[i+1][j-1]>=0){this.openBlock(i+1,j-1);}//左下
+            if(i>0&&this.rayArr[i-1][j]>=0){this.openBlock(i-1,j)}//中上
+            if(i<rows-1&&this.rayArr[i+1][j]>=0){this.openBlock(i+1,j)}//中下
+            if(i>0&&j<cols&&this.rayArr[i-1][j+1]>=0){this.openBlock(i-1,j+1)}//右上
+            if(j<cols&&this.rayArr[i][j+1]>=0){this.openBlock(i,j+1)}//右中
+            if(i<rows-1&&j<cols&&this.rayArr[i+1][j+1]>=0){this.openBlock(i+1,j+1)}//右下
+        },
+        openNearBlock: function(x,y){
+            var rows = this.options.X,
+                cols = this.options.Y,
+                hideNum = flagNum = 0;     
+            for(var i=x-1;i<x+2;i++){
+                if(i<0||i>rows-1)continue;
+                for(var j=y-1;j<y+2;j++){
+                    if(j<0||j>cols-1)continue;
+                    if(tdn('#r_'+i+'_'+j).hasClass("rayHide")){
+                        hideNum++;
+                    }
+                    if(tdn('#r_'+i+'_'+j).hasClass("rayFlag")){
+                        flagNum++;
+                    }
+                }
+
+            }
+
+            //console.log(hideNum,flagNum)
+            if(flagNum==this.rayArr[x][y]&&hideNum>0){
+                for(var i=x-1;i<x+2;i++){
+                    if(i<0||i>rows-1)continue;
+                    for(var j=y-1;j<y+2;j++){
+                        if(j<0||j>cols-1)continue;
+                        this.openBlock(i,j)
+                    }
+                }
+            }else {
+                for(var i=x-1;i<x+2;i++){
+                    if(i<0||i>rows-1)continue;
+                    for(var j=y-1;j<y+2;j++){
+                        if(j<0||j>cols-1)continue;
+                        tdn('#r_'+i+'_'+j).hasClass("rayHide")&&tdn('#r_'+i+'_'+j).shake("top",2);
+                    }
+                }
+            }
+        },
+        endGame: function(){
+            var rows = this.options.X,
+                cols = this.options.Y,
+                win = 1;
+            gameStatus = 0;
+            for(var i=0;i<rows;i++){
+                for(var j=0;j<cols;j++){
+                    if(tdn("#r_"+i+'_'+j).hasClass("rayHide")){//游戏结束之后所有未被点开的方格自动点开
+                        if(this.rayArr[i][j]<0){//是ray但没点开！
+                            tdn("#r_"+i+'_'+j).removeClass("rayHide").addClass("ray"); 
+                            win = 0;              
+                        }/*else{
+                            tdn("#r_"+i+'_'+j).removeClass("rayHide").addClass("rayOpen");
+                             tdn("#r_"+i+'_'+j).html(this.rayArr[i][j])
+                        }   */                  
+                    }
+                    if(tdn("#r_"+i+'_'+j).hasClass("rayFlag")){//游戏结束之后检测所有被标记为ray的方格
+                         if(this.rayArr[i][j]<0){
+                            tdn("#r_"+i+'_'+j).removeClass("rayFlag").addClass("ray");               
+                        }else{
+                            tdn("#r_"+i+'_'+j).removeClass("rayFlag").addClass("rayError");
+                            win = 0;//不是雷的误认为雷
+                        }
+                    }
+                }
+            }
+            if(win){
+                this.ico.src="img/smile.png";
+                alert("你赢了!");
+                tdn.setCookie('record',this.timeBox.innerHTML,1);
+                tdn("#record").html("最高纪录："+checked()+tdn.getCookie('record')+"秒")
+            }else{
+                this.ico.src="img/sad.png";
+                alert("你输了！")
+            }
+            clearInterval(timer)
+        },
+        addEvent: function(){
+            var self = this,x,y;
+            this.Box.onclick = function(ev){
+                var ev = ev || window.event,
+                oTarget = ev.srcElement||ev.target;
+                ev.preventDefault&&ev.preventDefault();
+                x = parseInt(oTarget.id.substring(oTarget.id.indexOf("_")+1,oTarget.id.lastIndexOf("_")));
+                y = parseInt(oTarget.id.substring(oTarget.id.lastIndexOf("_")+1));
+
+                if(gameStatus==0){alert("你的游戏还没有开始哦！");return;}
+                if(tdn(oTarget).hasClass("rayHide")){
+                    //console.log(oTarget.id,x,y)
+                    self.openBlock(x,y);
+                }else if(tdn(oTarget).hasClass("rayOpen")&&oTarget.innerHTML.length>0){
+                    self.openNearBlock(x,y);
+                }
+                return false;
+            };
+            this.Box.ondblclick = function(ev){
+                var ev = ev || window.event,
+                oTarget = ev.srcElement||ev.target;
+                return false;
+            }
+            this.Box.oncontextmenu = function(ev){
+                var ev = ev || window.event,
+                oTarget = ev.srcElement||ev.target;
+                if(gameStatus==0){alert("你的游戏还没有开始哦！");return false;}
+                if(tdn(oTarget).hasClass("rayHide")){
+                  tdn(oTarget).removeClass("rayHide").addClass("rayFlag");
+                  self.rayNum--;
+                  //console.log( self.rayNum );
+                   self.numBox.innerHTML  = self.addTwoZero(self.rayNum);
+                   if(self.rayNum==0){setTimeout(function(){self.endGame();},20);}
+                  return false;
+                }
+                if(tdn(oTarget).hasClass("rayFlag")){
+                    tdn(oTarget).removeClass("rayFlag").addClass("raySign");
+                      self.rayNum++;
+                      console.log( self.rayNum )
+                       self.numBox.innerHTML  = self.addTwoZero(self.rayNum);
+                    return false;
+                }
+                if(tdn(oTarget).hasClass("raySign")){
+                    tdn(oTarget).removeClass("raySign").addClass("rayHide");
+                    return false;
+                }
+                return false;
+            };
+            self.ico.onclick = function(){
+                if(gameStatus == 0){
+                    clearInterval(timer)
+                    self.timer();
+                    self.ico.src="img/cool.png";
+                    gameStatus = 1;
+                    ray();
+                    return ;
+                }
+                if(gameStatus == 1){
+                    gameStatus = 2;
+                    return ;
+                }
+            }
+        },
+        addTwoZero: function(num){
+            if(num<10){
+                return "00"+num;
+            }
+            if(num<100){
+                return "0"+num;
+            }
+            if(num>1000){
+                return 999;
+            }
+            return num;
+        },
+        timer: function(){
+            var self = this,num =0;
+            timer=setInterval(function(){
+                num++
+                self.timeBox.innerHTML = self.addTwoZero(num);
+            },1000)
+        }
+
+    }
+    ray.prototype.init.prototype = ray.fn;
+    function $(id){
+        return document.getElementById(id);
+    }
+    ray()
+   window.ray = ray;
+
+})(window);
+</script>
+</body>
+</html>
